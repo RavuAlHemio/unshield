@@ -930,7 +930,7 @@ static uint8_t* find_bytes(
     const uint8_t* buffer, size_t bufferSize, 
     const uint8_t* pattern, size_t patternSize)
 {
-  const void *p = buffer;
+  const char *p = buffer;
   size_t buffer_left = bufferSize;
   while ((p = memchr(p, pattern[0], buffer_left)) != NULL)
   {
