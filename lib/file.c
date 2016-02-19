@@ -14,7 +14,9 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
 #include <sys/param.h>    /* for MIN(a,b) */
+#endif
 #ifndef MIN /* missing in some platforms */
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #endif
