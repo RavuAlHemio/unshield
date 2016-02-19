@@ -3,7 +3,9 @@
 #include "log.h"
 #include "convert_utf/ConvertUTF.h"
 #include <sys/types.h>
-#include <dirent.h>
+#ifndef _WIN32
+# include <dirent.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -19,8 +21,10 @@ FILE* unshield_fopen_for_reading(Unshield* unshield, int index, const char* suff
     char dirname[256];
     char * p = strrchr(unshield->filename_pattern, '/');
     const char *q;
+#ifndef _WIN32
     struct dirent *dent = NULL;
     DIR *sourcedir;
+#endif
     snprintf(filename, sizeof(filename), unshield->filename_pattern, index, suffix);
     q=strrchr(filename,'/');
     if (q)
@@ -42,6 +46,7 @@ FILE* unshield_fopen_for_reading(Unshield* unshield, int index, const char* suff
     else
       strcpy(dirname,".");
 
+#ifndef _WIN32
     sourcedir = opendir(dirname);
     /* Search for the File case independent */
     if (sourcedir)
@@ -65,6 +70,7 @@ FILE* unshield_fopen_for_reading(Unshield* unshield, int index, const char* suff
     }
     else
       unshield_trace("Could not open directory %s error %s\n", dirname, strerror(errno));
+#endif
 
 #if VERBOSE
     unshield_trace("Opening file '%s'", filename);
@@ -72,8 +78,10 @@ FILE* unshield_fopen_for_reading(Unshield* unshield, int index, const char* suff
     result = fopen(filename, "rb");
 
 exit:
+#ifndef _WIN32
     if (sourcedir)
       closedir(sourcedir);
+#endif
 
     return result;
   }
