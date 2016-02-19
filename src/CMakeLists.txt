@@ -1,6 +1,6 @@
 SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
 
-add_executable(unshield "unshield.c")
+add_executable(unshield "unshield.c" "wingetopt.c")
 target_link_libraries(unshield libunshield)
 
 add_executable(unshield-deobfuscate "unshield-deobfuscate.c")
