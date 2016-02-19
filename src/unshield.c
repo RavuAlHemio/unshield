@@ -71,7 +71,9 @@ static const char* cab_file_name      = NULL;
 static char* const* path_names        = NULL;
 static int path_name_count            = 0;
 static const char* encoding           = NULL;
+#ifdef HAVE_ICONV
 iconv_t encoding_descriptor           = (iconv_t)-1;
+#endif
 
 static bool make_sure_directory_exists(const char* directory)/*{{{*/
 {
