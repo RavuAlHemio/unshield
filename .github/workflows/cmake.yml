@@ -20,8 +20,8 @@ jobs:
         - { name: Ubuntu,            os: ubuntu-latest,  shell: sh,          testing: ON }
         - { name: Windows - mingw32, os: windows-latest, shell: 'msys2 {0}', testing: ON,  compiler: gcc,  msystem: mingw32, msys-env: mingw-w64-i686 }
         - { name: Windows - mingw64, os: windows-latest, shell: 'msys2 {0}', testing: ON,  compiler: gcc,  msystem: mingw64, msys-env: mingw-w64-x86_64 }
-        - { name: Windows - MSVC32,  os: windows-latest, shell: pwsh,        testing: OFF, compiler: msvc, msvc-arch: amd64_x86, vcpkg-triplet: x86-windows }
-        - { name: Windows - MSVC64,  os: windows-latest, shell: pwsh,        testing: OFF, compiler: msvc, msvc-arch: amd64,     vcpkg-triplet: x64-windows }
+        - { name: Windows - MSVC32,  os: windows-latest, shell: pwsh,        testing: OFF, compiler: msvc, msvc-arch: amd64_x86, vcpkg-triplet: x86-windows-static }
+        - { name: Windows - MSVC64,  os: windows-latest, shell: pwsh,        testing: OFF, compiler: msvc, msvc-arch: amd64,     vcpkg-triplet: x64-windows-static }
         build-type: [Release]
         build-static: [ON]
     steps:
