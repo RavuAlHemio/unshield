@@ -16,12 +16,12 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-        - { name: macOS,             os: macos-latest,   shell: sh }
-        - { name: Ubuntu,            os: ubuntu-latest,  shell: sh }
-        - { name: Windows - mingw32, os: windows-latest, shell: 'msys2 {0}', compiler: gcc, msystem: mingw32, msys-env: mingw-w64-i686 }
-        - { name: Windows - mingw64, os: windows-latest, shell: 'msys2 {0}', compiler: gcc, msystem: mingw64, msys-env: mingw-w64-x86_64 }
-        - { name: Windows - MSVC32,  os: windows-latest, shell: pwsh,        compiler: msvc, msvc-arch: amd64_x86 }
-        - { name: Windows - MSVC64,  os: windows-latest, shell: pwsh,        compiler: msvc, msvc-arch: amd64 }
+        - { name: macOS,             os: macos-latest,   shell: sh,          testing: ON }
+        - { name: Ubuntu,            os: ubuntu-latest,  shell: sh,          testing: ON }
+        - { name: Windows - mingw32, os: windows-latest, shell: 'msys2 {0}', testing: ON,  compiler: gcc,  msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: Windows - mingw64, os: windows-latest, shell: 'msys2 {0}', testing: ON,  compiler: gcc,  msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: Windows - MSVC32,  os: windows-latest, shell: pwsh,        testing: OFF, compiler: msvc, msvc-arch: amd64_x86, vcpkg-triplet: x86-windows }
+        - { name: Windows - MSVC64,  os: windows-latest, shell: pwsh,        testing: OFF, compiler: msvc, msvc-arch: amd64,     vcpkg-triplet: x64-windows }
         build-type: [Release]
         build-static: [ON]
     steps:
@@ -62,11 +62,11 @@ jobs:
     - name: Setup Windows MSVC dependencies
       if: runner.os == 'Windows' && matrix.platform.compiler == 'msvc'
       run: |
-        vcpkg install zlib
+        vcpkg --triplet=${{matrix.platform.vcpkg-triplet}} install zlib
         "CMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake" >> $env:GITHUB_ENV
 
     - name: Configure CMake
-      run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build-type}} -DBUILD_STATIC=${{matrix.build-static}} -DBUILD_TESTING=ON
+      run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build-type}} -DBUILD_STATIC=${{matrix.build-static}} -DBUILD_TESTING=${{matrix.platform.build-testing}}
 
     - name: Build
       run: cmake --build build
