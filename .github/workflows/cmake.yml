@@ -18,8 +18,10 @@ jobs:
         platform:
         - { name: macOS,             os: macos-latest,   shell: sh }
         - { name: Ubuntu,            os: ubuntu-latest,  shell: sh }
-        - { name: Windows - mingw32, os: windows-latest, shell: 'msys2 {0}', msystem: mingw32, msys-env: mingw-w64-i686 }
-        - { name: Windows - mingw64, os: windows-latest, shell: 'msys2 {0}', msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: Windows - mingw32, os: windows-latest, shell: 'msys2 {0}', compiler: gcc, msystem: mingw32, msys-env: mingw-w64-i686 }
+        - { name: Windows - mingw64, os: windows-latest, shell: 'msys2 {0}', compiler: gcc, msystem: mingw64, msys-env: mingw-w64-x86_64 }
+        - { name: Windows - MSVC32,  os: windows-latest, shell: pwsh,        compiler: msvc, msvc-arch: amd64_x86 }
+        - { name: Windows - MSVC64,  os: windows-latest, shell: pwsh,        compiler: msvc, msvc-arch: amd64 }
         build-type: [Release]
         build-static: [ON]
     steps:
@@ -39,9 +41,8 @@ jobs:
             ninja zlib
         echo "CMAKE_PREFIX_PATH=$(brew --prefix openssl):$(brew --prefix zlib)" >> $GITHUB_ENV
 
-
-    - name: Setup Windows dependencies
-      if: runner.os == 'Windows'
+    - name: Setup Windows MinGW dependencies
+      if: runner.os == 'Windows' && matrix.platform.compiler == 'gcc'
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{matrix.platform.msystem}}
@@ -51,6 +52,12 @@ jobs:
           ${{matrix.platform.msys-env}}-ninja
           ${{matrix.platform.msys-env}}-openssl
           ${{matrix.platform.msys-env}}-zlib
+
+    - name: Setup Windows MSVC path
+      if: runner.os == 'Windows' && matrix.platform.compiler == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{matrix.platform.msvc-arch}}
 
     - name: Configure CMake
       run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build-type}} -DBUILD_STATIC=${{matrix.build-static}} -DBUILD_TESTING=ON
